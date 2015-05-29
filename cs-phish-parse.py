@@ -7,6 +7,7 @@ import argparse
 parser = argparse.ArgumentParser(description='This script will parse multiple Cobalt Strike Phishing campaigns. Inputs need to be TSV files exported by Cobalt Strike.')
 parser.add_argument('-w', '--weblog', help='Weblog TSV file',required=True)
 parser.add_argument('-s','--spearphishes', help='Spearphishes TSV file', required=True)
+parser.add_argument('-e','--exclude', help='Exclude address file; one per line', required=False)
 args = parser.parse_args()
 
 #spearfishes list variables
@@ -17,7 +18,7 @@ listSpearfishes=[]
 keysWeblog=['_host','_created_at','_method','_uri','_response','_size','_handler','_user_agent','_token_wl','_primary']
 listWeblog=[]
 
-#parse spearphises file into dict-list
+#parse spearphishes file into dict-list
 with open(args.spearphishes,'r') as f:
     next(f) # skip headings
     reader=csv.reader(f,delimiter='\t')
@@ -32,6 +33,18 @@ with open(args.weblog,'r') as f:
     for host,created_at,method,uri,response,size,handler,user_agent,token_wl,primary in reader:
         tmp=[host,created_at,method,uri,response,size,handler,user_agent,token_wl,primary]
         listWeblog.append(dict(zip(keysWeblog,tmp)))
+
+#read in exclude list if it exists
+if args.exclude:
+    with open(args.exclude,'r') as f:
+        excludeList = [word.strip() for word in f] #strip the new line /n 
+    #remove excludes
+    tmptok=[]
+    for dictx in listSpearfishes:
+        if dictx["_to"] in excludeList:
+            tmptok.append(dictx["_to"])
+            listSpearfishes.remove(dictx)
+    
 
 def calcThings(subj):
     totTargets=0
@@ -66,6 +79,8 @@ def getUniqueListBySubj(listy,dictvalue,subj):
         if x["_subject"] == subj:
             tmpList.append(x[dictvalue])
     return filter(None,sorted(list(set(tmpList))))
+
+#######################################
 
 #derive needed variables from lists
 subjectList = getUniqueList(listSpearfishes,"_subject")
