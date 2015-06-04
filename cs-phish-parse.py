@@ -56,8 +56,11 @@ def calcThings(subj):
             totTargets+=1
             if tmpdict["_token"] in tokensUniq:
                 uniqClicks+=1
-            if tmpdict["_token"] in tokensTot:
-                totClicks+=1
+
+    for tmpdict in listWeblog:
+        if tmpdict["_token_wl"] in tokensTot:
+            totClicks+=1
+
     return totTargets,uniqClicks,totClicks
 
 def getUniqueList(listy,dictvalue):
@@ -98,3 +101,5 @@ for subj in subjectList:
     print "Unique targets who clicked: %i" % uniqClicks
     print "Unique click rate: %5.2f%%" % ((uniqClicks / float(len(getUniqueListBySubj(listSpearfishes,"_to",subj))))*100) 
     print "Total clicks: %i" % totClicks
+
+
