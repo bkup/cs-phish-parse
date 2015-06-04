@@ -56,10 +56,8 @@ def calcThings(subj):
             totTargets+=1
             if tmpdict["_token"] in tokensUniq:
                 uniqClicks+=1
-
-    for tmpdict in listWeblog:
-        if tmpdict["_token_wl"] in tokensTot:
-            totClicks+=1
+            if tmpdict["_token"] in tokensTot:
+                totClicks+=tokensTot.count(tmpdict["_token"])
 
     return totTargets,uniqClicks,totClicks
 
