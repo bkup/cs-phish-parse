@@ -3,6 +3,10 @@
 import csv
 import argparse
 
+##This script is used to parse TSV files exported from Cobalt Strike's phihsing module.  
+##The spearfishes and weblog files are required.
+##An optional exclude list can be used to remove certain email addresses from calculations
+
 #checks for args
 parser = argparse.ArgumentParser(description='This script will parse multiple Cobalt Strike Phishing campaigns. Inputs need to be TSV files exported by Cobalt Strike.')
 parser.add_argument('-w', '--weblog', help='Weblog TSV file',required=True)
@@ -10,6 +14,7 @@ parser.add_argument('-s','--spearphishes', help='Spearphishes TSV file', require
 parser.add_argument('-e','--exclude', help='Exclude address file; one per line', required=False)
 args = parser.parse_args()
 
+#Each line in the TSV gets made into a dictionary item and added to the overall list
 #spearfishes list variables
 keysSpearfishes=['_to','_to_name','_server','_status','_time','_token','_template','_subject','_url','_attachment']
 listSpearfishes=[]
@@ -56,7 +61,6 @@ def calcThings(subj):
             totTargets+=1
             if tmpdict["_token"] in tokensUniq:
                 uniqClicks+=1
-            if tmpdict["_token"] in tokensTot:
                 totClicks+=tokensTot.count(tmpdict["_token"])
 
     return totTargets,uniqClicks,totClicks
@@ -83,14 +87,17 @@ def getUniqueListBySubj(listy,dictvalue,subj):
 
 #######################################
 
-#derive needed variables from lists
+#derive needed values from lists
 subjectList = getUniqueList(listSpearfishes,"_subject")
 tokensUniq = getUniqueList(listWeblog,"_token_wl")
 tokensTot = getList(listWeblog,"_token_wl")
+targetsTot = getUniqueList(listSpearfishes,"_to")
 #show the goods
+print "-" * 50
 print "Number of campaigns: %i" % len(subjectList)
+print "Overall unique click rate: %5.2f%%" % (len(tokensUniq) / float(len(targetsTot))*100)
 for subj in subjectList:
-    totTargets, uniqClicks, totClicks= calcThings(subj)
+    totTargets, uniqClicks, totClicks = calcThings(subj)
     print "-" * 50
     print "Campaign '%s' " % subj
     print "-" * 50
