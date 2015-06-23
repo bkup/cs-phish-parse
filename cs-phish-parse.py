@@ -124,8 +124,6 @@ tokensUniq = set(getList(listWeblog,"_token_wl"))
 tokensTot = getList(listWeblog,"_token_wl")
 targetsTot = set(getList(listSpearfishes,"_to"))
 #show the goods
-print len(tokensUniq)
-print len(targetsTot)
 print "-" * 50
 print "Number of campaigns: %i" % len(subjectList)
 print "Overall unique click rate: %5.2f%%" % (len(tokensUniq) / float(len(targetsTot))*100)
