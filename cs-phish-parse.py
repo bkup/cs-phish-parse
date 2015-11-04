@@ -60,15 +60,15 @@ for x in listMaster:
 
 #get the total emails sent
 count = 0
-with open(filepath + "/sentemails.tsv",'r') as f:
-    reader = csv.DictReader(f,delimiter='\t')
-    for x in listMaster:   
+for x in listMaster: 
+    with open(filepath + "/sentemails.tsv",'r') as f:
+        reader = csv.DictReader(f,delimiter='\t')
         for row in reader:
-            if row['cid'] == x['cid']:
+            if x['cid'] == row['cid']:
                 if "SUCCESS" in row['status']:
                     count += 1
-        x['total_sent'] = count
-        count = 0
+    x['total_sent'] = count
+    count = 0
 
 #get list of tokens that clicked
 with open(filepath + "/webhits.tsv",'r') as f:
@@ -80,23 +80,21 @@ with open(filepath + "/webhits.tsv",'r') as f:
 #get unique list of tokens
 listTokensUniq = set(listTokens)
 
-#print len(listTokens)
-
 #run through all tokens and compare to total and unique hit lists
 countTot = 0
 countUniq = 0
-with open(filepath + "/tokens.tsv",'r') as f:
-    reader = csv.DictReader(f,delimiter='\t')
-    for x in listMaster:   
+for x in listMaster:
+    with open(filepath + "/tokens.tsv",'r') as f:
+        reader = csv.DictReader(f,delimiter='\t')
         for row in reader:
             if x['cid'] == row['cid']:
                 countTot += listTokens.count(row['token'])
                 if row['token'] in listTokensUniq:
                     countUniq += 1
-        x['total_id'] = countTot
-        x['unique_id'] = countUniq
-        countTot = 0
-        countUniq = 0
+    x['total_id'] = countTot
+    x['unique_id'] = countUniq
+    countTot = 0
+    countUniq = 0
 
 #show the goods
 print "-" * 50
@@ -107,5 +105,5 @@ for x in listMaster:
     print "-" * 50
     print "Total emails sent: %i" % x['total_sent']
     print "Unique targets who clicked: %i" % x['unique_id']
-    print "Unique click rate: %5.2f%%" % (x['unique_id'] / float(x['total_sent']))
+    print "Unique click rate: %5.2f%%" % ((x['unique_id'] / float(x['total_sent'])) * 100)
     print "Total clicks: %i" % x['total_id']
